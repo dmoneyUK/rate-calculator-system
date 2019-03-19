@@ -1,0 +1,3 @@
+#Assumptions
+* A loan/quote can be built from multiple offer
+* An offer can be bundled to a loan partially (i.e. an offer providing £100 can be selected but only borrow £10 from it)
