@@ -1,7 +1,8 @@
-package com.zopa.ratecalculationsystem.service;
+package com.zopa.ratecalculationsystem.service.impl;
 
 import com.zopa.ratecalculationsystem.TestOfferEnum;
 import com.zopa.ratecalculationsystem.model.Offer;
+import com.zopa.ratecalculationsystem.service.CsvLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class OfferServiceImplUTest {
     
-    private OfferServiceImpl offerServiceImpl;
+    private OfferServiceImpl testObj;
     
     @Mock private CsvLoader csvLoaderMock;
     
@@ -33,7 +34,7 @@ public class OfferServiceImplUTest {
     
     @Before
     public void setUp() {
-        offerServiceImpl = new OfferServiceImpl(csvLoaderMock);
+        testObj = new OfferServiceImpl(csvLoaderMock);
         testOffers = Arrays.stream(TestOfferEnum.values())
                            .map(e -> e.offer())
                            .collect(Collectors.toList());
@@ -44,7 +45,7 @@ public class OfferServiceImplUTest {
     public void shouldLoadfromCsvWhenAvailableOffersIsEmpty() {
         
         //when
-        List<Offer> actual = offerServiceImpl.getAvailableOffers();
+        List<Offer> actual = testObj.getAvailableOffers();
         
         //then
         assertThat(actual).isNotNull();
@@ -55,8 +56,8 @@ public class OfferServiceImplUTest {
     @Test
     public void shouldReturnOneOfferOfLowRate() {
         //when
-        List<Offer> actual = offerServiceImpl.getLowInterestOffers(Jane.offer()
-                                                                       .getAvailable());
+        List<Offer> actual = testObj.getLowInterestOffers(Jane.offer()
+                                                              .getAvailable());
         
         //then
         assertThat(actual).isNotNull();
@@ -68,32 +69,32 @@ public class OfferServiceImplUTest {
     @Test
     public void shouldReturnOfferBundleOfLowRate() {
         //when
-        List<Offer> actual = offerServiceImpl.getLowInterestOffers(Jane.offer().getAvailable()
-                                                                       .add(Fred.offer().getAvailable()));
+        List<Offer> actual = testObj.getLowInterestOffers(Jane.offer().getAvailable()
+                                                              .add(Angela.offer().getAvailable()));
         
         //then
         assertThat(actual).isNotNull();
         assertThat(actual.size()).isEqualTo(2);
         assertThat(actual.get(0)).isEqualTo(Jane.offer());
-        assertThat(actual.get(1)).isEqualTo(Fred.offer());
+        assertThat(actual.get(1)).isEqualTo(Angela.offer());
         
     }
     
     @Test
     public void shouldReturnOfferBundleWithAPartilOfferOfLowRate() {
         //when
-        List<Offer> actual = offerServiceImpl.getLowInterestOffers(Jane.offer().getAvailable()
-                                                                       .add(Fred.offer().getAvailable())
-                                                                       .add(BigDecimal.TEN));
+        List<Offer> actual = testObj.getLowInterestOffers(Jane.offer().getAvailable()
+                                                              .add(Angela.offer().getAvailable())
+                                                              .add(BigDecimal.TEN));
         
         //then
         assertThat(actual).isNotNull();
         assertThat(actual.size()).isEqualTo(3);
         assertThat(actual.get(0)).isEqualTo(Jane.offer());
-        assertThat(actual.get(1)).isEqualTo(Fred.offer());
+        assertThat(actual.get(1)).isEqualTo(Angela.offer());
         Offer partialOffer = actual.get(2);
-        assertThat(partialOffer.getLender()).isEqualTo(Angela.offer().getLender());
-        assertThat(partialOffer.getRate()).isEqualTo(Angela.offer().getRate());
+        assertThat(partialOffer.getLender()).isEqualTo(Fred.offer().getLender());
+        assertThat(partialOffer.getRate()).isEqualTo(Fred.offer().getRate());
         assertThat(partialOffer.getAvailable()).isEqualTo(BigDecimal.TEN);
         
     }

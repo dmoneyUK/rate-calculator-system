@@ -1,6 +1,8 @@
-package com.zopa.ratecalculationsystem.service;
+package com.zopa.ratecalculationsystem.service.impl;
 
 import com.zopa.ratecalculationsystem.model.Offer;
+import com.zopa.ratecalculationsystem.service.CsvLoader;
+import com.zopa.ratecalculationsystem.service.OfferService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -29,12 +31,13 @@ public class OfferServiceImpl implements OfferService {
     @Override
     public List<Offer> getLowInterestOffers(BigDecimal requestAmount) {
         List<Offer> availableOffers = getAvailableOffers();
-        availableOffers.sort(comparing(Offer::getRate));
+        availableOffers.sort(comparing(Offer::getRate).thenComparing(Offer::getAvailable));
         
         return selectLowInterestOffers(availableOffers, requestAmount);
     }
     
     private List<Offer> selectLowInterestOffers(List<Offer> availableOffers, BigDecimal requestAmount) {
+        
         List<Offer> selected = new ArrayList<>();
         for (Offer offer : availableOffers) {
             if (requestAmount.compareTo(offer.getAvailable()) > 0) {

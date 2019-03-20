@@ -5,5 +5,7 @@
 # Assumptions
 * A loan/quote can be built from multiple offer
 * An offer can be bundled to a loan partially (i.e. an offer providing £100 can be selected but only borrow £10 from it)
-* If multiple offers provided with the same rate, any one could be selected. (Could be improved to select the small amount first)
+* If multiple offers provided with the same rate, the small amount will be selected first.
 * Multithread concurrency is not supported
+* Run the app will generate one loan only and does not support to generate another loan(The offers selected are not
+removed from available. Can be improved.)

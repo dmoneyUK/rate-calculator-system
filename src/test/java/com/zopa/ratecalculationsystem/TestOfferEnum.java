@@ -12,7 +12,8 @@ public enum TestOfferEnum {
     Mary(new Offer("Mary", BigDecimal.valueOf(0.104), BigDecimal.valueOf(170))),
     John(new Offer("John", BigDecimal.valueOf(0.081), BigDecimal.valueOf(320))),
     Dave(new Offer("Dave", BigDecimal.valueOf(0.074), BigDecimal.valueOf(140))),
-    Angela(new Offer("Angela", BigDecimal.valueOf(0.071), BigDecimal.valueOf(60)));
+    Angela(new Offer("Angela", BigDecimal.valueOf(0.071), BigDecimal.valueOf(60))),
+    Dan(new Offer("Dan", BigDecimal.valueOf(0.060), BigDecimal.valueOf(100)));
     
     private Offer offer;
     
