@@ -1,7 +1,6 @@
-package com.zopa.ratecalculationsystem.service;
+package com.zopa.ratecalculationsystem.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -12,11 +11,12 @@ import java.math.BigDecimal;
 @Data
 @ToString
 @EqualsAndHashCode
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Offer {
     
     private String lender;
     private BigDecimal rate;
     private BigDecimal available;
+    
 }
