@@ -9,6 +9,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,10 +21,10 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class OfferCsvLoaderImpl implements CsvLoader {
     
     @Override
-    public <T> List<T> load(Class<T> type, String fileName) {
+    public <T> List<T> load(Class<T> type, String fileName) throws IOException {
         try {
-            // Check file name is null or empty and file format
-            File file = new ClassPathResource(fileName).getFile();
+            // Improvement: Check file name is null or empty and file format
+            File file = new File(fileName);
     
             CsvSchema bootstrapSchema = CsvSchema.emptySchema()
                                                  .withHeader();
@@ -37,7 +38,7 @@ public class OfferCsvLoaderImpl implements CsvLoader {
             return readValues.readAll();
         } catch (Exception e) {
             log.error("Error occurred while loading object list from file " + fileName, e);
-            return Collections.emptyList();
+            throw e;
         }
     }
     

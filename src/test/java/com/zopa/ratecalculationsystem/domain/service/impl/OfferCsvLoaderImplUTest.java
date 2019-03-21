@@ -5,7 +5,9 @@ import com.zopa.ratecalculationsystem.infrastructure.OfferCsvLoaderImpl;
 import com.zopa.ratecalculationsystem.domain.model.Offer;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,8 +23,8 @@ public class OfferCsvLoaderImplUTest {
     }
     
     @Test
-    public void shouldLoadCsvToOfferList() {
-        List<Offer> actual = testObj.load(Offer.class, "test_market_data.csv");
+    public void shouldLoadCsvToOfferList() throws IOException {
+        List<Offer> actual = testObj.load(Offer.class, new ClassPathResource("test_market_data.csv").getFile().getAbsolutePath());
         assertThat(actual.size()).isEqualTo(7);
         Arrays.stream(TestOfferEnum.values())
               .forEach(e -> {

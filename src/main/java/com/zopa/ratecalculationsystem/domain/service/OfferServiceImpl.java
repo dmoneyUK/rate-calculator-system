@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class OfferServiceImpl implements OfferService {
     }
     
     @Override
-    public void loadOffers(String fileName) {
+    public void loadOffers(String fileName) throws IOException {
         this.availableOffers = offerLoader.load(Offer.class, fileName);
         availableOffers.sort(comparing(Offer::getRate).thenComparing(Offer::getAvailable));
     }
@@ -47,7 +48,7 @@ public class OfferServiceImpl implements OfferService {
             requestAmount = requestAmount.subtract(offer.getAvailable());
         }
         if(selected.isEmpty()){
-            log.warn("Cannot find sufficient offers at that time.");
+            System.out.println("Cannot find sufficient offers at that time.");
         }
         return selected;
     }

@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +34,7 @@ public class OfferServiceImplUTest {
     private List testOffers;
     
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         testObj = new OfferServiceImpl(csvLoaderMock);
         testOffers = Arrays.stream(TestOfferEnum.values())
                            .map(e -> e.offer())
@@ -42,7 +43,7 @@ public class OfferServiceImplUTest {
     }
     
     @Test
-    public void shouldLoadfromCsv() {
+    public void shouldLoadfromCsv() throws IOException {
         
         //when
         testObj.loadOffers(TEST_FILE_NAME);
@@ -52,7 +53,7 @@ public class OfferServiceImplUTest {
     }
     
     @Test
-    public void shouldReturnOneOfferOfLowRate() {
+    public void shouldReturnOneOfferOfLowRate() throws IOException {
     
         //given
         testObj.loadOffers(TEST_FILE_NAME);
@@ -68,7 +69,7 @@ public class OfferServiceImplUTest {
     }
     
     @Test
-    public void shouldReturnOfferBundleOfLowRate() {
+    public void shouldReturnOfferBundleOfLowRate() throws IOException {
     
         //given
         testObj.loadOffers(TEST_FILE_NAME);
@@ -86,7 +87,7 @@ public class OfferServiceImplUTest {
     }
     
     @Test
-    public void shouldReturnOfferBundleWithAPartilOfferOfLowRate() {
+    public void shouldReturnOfferBundleWithAPartilOfferOfLowRate() throws IOException {
         //given
         testObj.loadOffers(TEST_FILE_NAME);
         
