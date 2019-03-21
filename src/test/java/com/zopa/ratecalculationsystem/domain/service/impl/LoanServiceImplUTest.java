@@ -1,7 +1,8 @@
-package com.zopa.ratecalculationsystem.service.impl;
+package com.zopa.ratecalculationsystem.domain.service.impl;
 
-import com.zopa.ratecalculationsystem.model.Loan;
-import com.zopa.ratecalculationsystem.service.OfferService;
+import com.zopa.ratecalculationsystem.domain.model.Loan;
+import com.zopa.ratecalculationsystem.domain.service.LoanServiceImpl;
+import com.zopa.ratecalculationsystem.domain.service.OfferService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +12,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.math.BigDecimal;
 
 import static com.zopa.ratecalculationsystem.TestOfferEnum.Dan;
-import static com.zopa.ratecalculationsystem.TestOfferEnum.Jane;
 import static java.math.BigDecimal.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.newArrayList;
@@ -34,8 +34,8 @@ public class LoanServiceImplUTest {
     @Test
     public void shouldReturnLoanWithLowInterestOffers() {
         
+        //given
         BigDecimal expectedAmount = valueOf(100);
-        //Given
         when(offerServiceMock.getLowInterestOffers(expectedAmount))
                 .thenReturn(newArrayList(Dan.offer()));
         
@@ -45,9 +45,9 @@ public class LoanServiceImplUTest {
         //then
         verify(offerServiceMock).getLowInterestOffers(expectedAmount);
         assertThat(actual.getRequestAmount()).isEqualTo(expectedAmount);
-        assertThat(actual.getTotalRepayment()).isEqualTo(valueOf(119.67));
-        assertThat(actual.getMonthlyRepayment()).isEqualTo(valueOf(3.32));
-        assertThat(actual.getRate()).isEqualTo(valueOf(0.060).setScale(3));
+        assertThat(actual.getTotalRepayment()).isEqualTo(valueOf(143.08));
+        assertThat(actual.getMonthlyRepayment()).isEqualTo(valueOf(3.97));
+        assertThat(actual.getRate()).isEqualTo(valueOf(0.120).setScale(3));
         
         
     }

@@ -1,8 +1,10 @@
-package com.zopa.ratecalculationsystem.service.impl;
+package com.zopa.ratecalculationsystem.domain.service;
 
-import com.zopa.ratecalculationsystem.model.Offer;
-import com.zopa.ratecalculationsystem.service.CsvLoader;
-import com.zopa.ratecalculationsystem.service.OfferService;
+import com.zopa.ratecalculationsystem.domain.model.Offer;
+import com.zopa.ratecalculationsystem.infrastructure.CsvLoader;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -10,34 +12,27 @@ import java.util.List;
 
 import static java.util.Comparator.comparing;
 
+@Service
+@Slf4j
 public class OfferServiceImpl implements OfferService {
     
     private List<Offer> availableOffers;
     private CsvLoader offerLoader;
     
+    @Autowired
     public OfferServiceImpl(CsvLoader offerLoader) {
         availableOffers = new ArrayList<>();
         this.offerLoader = offerLoader;
     }
     
     @Override
-    public List<Offer> getAvailableOffers() {
-        if (availableOffers.isEmpty()) {
-            availableOffers = offerLoader.load(Offer.class, null);
-        }
-        return availableOffers;
+    public void loadOffers(String fileName) {
+        this.availableOffers = offerLoader.load(Offer.class, fileName);
+        availableOffers.sort(comparing(Offer::getRate).thenComparing(Offer::getAvailable));
     }
     
     @Override
     public List<Offer> getLowInterestOffers(BigDecimal requestAmount) {
-        List<Offer> availableOffers = getAvailableOffers();
-        availableOffers.sort(comparing(Offer::getRate).thenComparing(Offer::getAvailable));
-        
-        return selectLowInterestOffers(availableOffers, requestAmount);
-    }
-    
-    private List<Offer> selectLowInterestOffers(List<Offer> availableOffers, BigDecimal requestAmount) {
-        
         List<Offer> selected = new ArrayList<>();
         for (Offer offer : availableOffers) {
             if (requestAmount.compareTo(offer.getAvailable()) > 0) {
@@ -51,6 +46,10 @@ public class OfferServiceImpl implements OfferService {
             }
             requestAmount = requestAmount.subtract(offer.getAvailable());
         }
+        if(selected.isEmpty()){
+            log.warn("Cannot find sufficient offers at that time.");
+        }
         return selected;
     }
+    
 }

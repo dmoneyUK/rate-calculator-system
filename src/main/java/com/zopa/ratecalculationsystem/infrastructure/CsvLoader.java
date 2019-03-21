@@ -1,4 +1,4 @@
-package com.zopa.ratecalculationsystem.service;
+package com.zopa.ratecalculationsystem.infrastructure;
 
 import java.util.List;
 

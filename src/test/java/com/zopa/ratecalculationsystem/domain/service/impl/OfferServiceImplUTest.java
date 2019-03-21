@@ -1,8 +1,9 @@
-package com.zopa.ratecalculationsystem.service.impl;
+package com.zopa.ratecalculationsystem.domain.service.impl;
 
 import com.zopa.ratecalculationsystem.TestOfferEnum;
-import com.zopa.ratecalculationsystem.model.Offer;
-import com.zopa.ratecalculationsystem.service.CsvLoader;
+import com.zopa.ratecalculationsystem.domain.model.Offer;
+import com.zopa.ratecalculationsystem.domain.service.OfferServiceImpl;
+import com.zopa.ratecalculationsystem.infrastructure.CsvLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,14 +19,13 @@ import static com.zopa.ratecalculationsystem.TestOfferEnum.Angela;
 import static com.zopa.ratecalculationsystem.TestOfferEnum.Fred;
 import static com.zopa.ratecalculationsystem.TestOfferEnum.Jane;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OfferServiceImplUTest {
     
+    public static final String TEST_FILE_NAME = "file-name";
     private OfferServiceImpl testObj;
     
     @Mock private CsvLoader csvLoaderMock;
@@ -38,26 +38,27 @@ public class OfferServiceImplUTest {
         testOffers = Arrays.stream(TestOfferEnum.values())
                            .map(e -> e.offer())
                            .collect(Collectors.toList());
-        when(csvLoaderMock.load(eq(Offer.class), anyString())).thenReturn(testOffers);
+        when(csvLoaderMock.load(Offer.class, TEST_FILE_NAME)).thenReturn(testOffers);
     }
     
     @Test
-    public void shouldLoadfromCsvWhenAvailableOffersIsEmpty() {
+    public void shouldLoadfromCsv() {
         
         //when
-        List<Offer> actual = testObj.getAvailableOffers();
+        testObj.loadOffers(TEST_FILE_NAME);
         
         //then
-        assertThat(actual).isNotNull();
-        verify(csvLoaderMock).load(eq(Offer.class), anyString());
-        assertThat(actual).isEqualTo(testOffers);
+        verify(csvLoaderMock).load(Offer.class, TEST_FILE_NAME);
     }
     
     @Test
     public void shouldReturnOneOfferOfLowRate() {
+    
+        //given
+        testObj.loadOffers(TEST_FILE_NAME);
+    
         //when
-        List<Offer> actual = testObj.getLowInterestOffers(Jane.offer()
-                                                              .getAvailable());
+        List<Offer> actual = testObj.getLowInterestOffers(Jane.offer().getAvailable());
         
         //then
         assertThat(actual).isNotNull();
@@ -68,6 +69,10 @@ public class OfferServiceImplUTest {
     
     @Test
     public void shouldReturnOfferBundleOfLowRate() {
+    
+        //given
+        testObj.loadOffers(TEST_FILE_NAME);
+        
         //when
         List<Offer> actual = testObj.getLowInterestOffers(Jane.offer().getAvailable()
                                                               .add(Angela.offer().getAvailable()));
@@ -82,6 +87,9 @@ public class OfferServiceImplUTest {
     
     @Test
     public void shouldReturnOfferBundleWithAPartilOfferOfLowRate() {
+        //given
+        testObj.loadOffers(TEST_FILE_NAME);
+        
         //when
         List<Offer> actual = testObj.getLowInterestOffers(Jane.offer().getAvailable()
                                                               .add(Angela.offer().getAvailable())
@@ -97,6 +105,16 @@ public class OfferServiceImplUTest {
         assertThat(partialOffer.getRate()).isEqualTo(Fred.offer().getRate());
         assertThat(partialOffer.getAvailable()).isEqualTo(BigDecimal.TEN);
         
+    }
+    
+    @Test
+    public void shouldReturnEmptyListWhenCannotFindSufficientOffers() {
+        
+        //when
+        List<Offer> actual = testObj.getLowInterestOffers(Jane.offer().getAvailable());
+        
+        //then
+        assertThat(actual.size()).isEqualTo(0);
     }
     
 }

@@ -1,13 +1,15 @@
-package com.zopa.ratecalculationsystem.service;
+package com.zopa.ratecalculationsystem.domain.service;
 
-import com.zopa.ratecalculationsystem.model.Offer;
+import com.zopa.ratecalculationsystem.domain.model.Offer;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface OfferService {
     
-    List<Offer> getAvailableOffers();
+    void loadOffers(String fileName);
     
     List<Offer> getLowInterestOffers(BigDecimal requestAmount);
+    
+    
 }

@@ -1,33 +1,28 @@
-package com.zopa.ratecalculationsystem.service.impl;
+package com.zopa.ratecalculationsystem.infrastructure;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.zopa.ratecalculationsystem.model.Offer;
-import com.zopa.ratecalculationsystem.service.CsvLoader;
+import com.zopa.ratecalculationsystem.domain.model.Offer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Slf4j
+@Component
 public class OfferCsvLoaderImpl implements CsvLoader {
-    
-    public static final String DEFAULT_FILE_NAME = "test_market_data.csv";
     
     @Override
     public <T> List<T> load(Class<T> type, String fileName) {
         try {
-            if(isEmpty(fileName)){
-                log.warn("Offer csv filename is absent. Default filename {} is used.", DEFAULT_FILE_NAME);
-                fileName = DEFAULT_FILE_NAME;
-            }
+            // Check file name is null or empty and file format
             File file = new ClassPathResource(fileName).getFile();
     
             CsvSchema bootstrapSchema = CsvSchema.emptySchema()

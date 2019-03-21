@@ -1,4 +1,4 @@
-package com.zopa.ratecalculationsystem.model;
+package com.zopa.ratecalculationsystem.domain.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
