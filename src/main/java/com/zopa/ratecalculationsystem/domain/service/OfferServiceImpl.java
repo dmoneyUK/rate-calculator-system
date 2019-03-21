@@ -1,5 +1,6 @@
 package com.zopa.ratecalculationsystem.domain.service;
 
+import com.zopa.ratecalculationsystem.domain.exception.NoSufficientOfferException;
 import com.zopa.ratecalculationsystem.domain.model.Offer;
 import com.zopa.ratecalculationsystem.infrastructure.CsvLoader;
 import lombok.extern.slf4j.Slf4j;
@@ -7,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static java.util.Comparator.comparing;
@@ -33,22 +34,25 @@ public class OfferServiceImpl implements OfferService {
     }
     
     @Override
-    public List<Offer> getLowInterestOffers(BigDecimal requestAmount) {
+    public List<Offer> getLowInterestOffers(Integer requestAmount) {
+        
         List<Offer> selected = new ArrayList<>();
-        for (Offer offer : availableOffers) {
-            if (requestAmount.compareTo(offer.getAvailable()) > 0) {
+    
+        int remaining = requestAmount;
+        Iterator<Offer> it = availableOffers.iterator();
+        while (it.hasNext() && remaining != 0) {
+            Offer offer = it.next();
+            if (remaining >= offer.getAvailable()) {
                 selected.add(offer);
-            } else if (requestAmount.compareTo(offer.getAvailable()) == 0) {
-                selected.add(offer);
-                break;
+                remaining -= offer.getAvailable();
             } else {
-                selected.add(new Offer(offer.getLender(), offer.getRate(), requestAmount));
-                break;
+                selected.add(new Offer(offer.getLender(), offer.getRate(), remaining));
+                remaining=0;
             }
-            requestAmount = requestAmount.subtract(offer.getAvailable());
         }
-        if(selected.isEmpty()){
-            System.out.println("Cannot find sufficient offers at that time.");
+    
+        if (remaining != 0) {
+            throw new NoSufficientOfferException("Cannot find sufficient offers at that time.");
         }
         return selected;
     }

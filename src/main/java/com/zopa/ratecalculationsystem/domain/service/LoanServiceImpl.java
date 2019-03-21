@@ -1,25 +1,27 @@
 package com.zopa.ratecalculationsystem.domain.service;
 
+import com.zopa.ratecalculationsystem.domain.exception.InvalidRequestAmountException;
 import com.zopa.ratecalculationsystem.domain.model.Loan;
 import com.zopa.ratecalculationsystem.domain.model.Offer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
-import static java.math.BigDecimal.ONE;
-import static java.math.BigDecimal.valueOf;
-import static java.math.RoundingMode.HALF_UP;
+import static com.zopa.ratecalculationsystem.infrastructure.DoubleFormatter.SCALE_THREE;
+import static com.zopa.ratecalculationsystem.infrastructure.DoubleFormatter.SCALE_TWO;
+import static com.zopa.ratecalculationsystem.infrastructure.DoubleFormatter.format;
 
 @Service
 @Slf4j
 public class LoanServiceImpl implements LoanService {
     
-    public static final int TERM = 36;
-    public static final int MONTHS_A_YEAR = 12;
+    public static final Integer LOAN_TERM = 36;
+    public static final Integer MONTHS_A_YEAR = 12;
+    public static final Integer MINI_REQUEST_AMOUNT = 1000;
+    public static final Integer MAX_REQUEST_AMOUNT = 15000;
+    public static final Integer INCREMENT = 100;
     
     private OfferService offerService;
     
@@ -29,57 +31,46 @@ public class LoanServiceImpl implements LoanService {
     }
     
     @Override
-    public Optional<Loan> getLoan(BigDecimal requestAmount) {
-    
-        if (!validateRequestAmount(requestAmount)) {
-            return Optional.empty();
-        }
+    public Loan getLoan(Integer requestAmount) {
+        validateRequestAmount(requestAmount);
         
         List<Offer> selectedOffers = offerService.getLowInterestOffers(requestAmount);
     
-        return Optional.of(buildLoan(requestAmount, selectedOffers));
+        return createLoan(requestAmount, selectedOffers);
     }
     
-    private boolean validateRequestAmount(BigDecimal requestAmount) {
-        if (requestAmount.compareTo(BigDecimal.valueOf(1000)) < 0
-                || requestAmount.compareTo(BigDecimal.valueOf(15000)) > 0
-                || requestAmount.remainder(BigDecimal.valueOf(100)).compareTo(BigDecimal.ZERO) != 0) {
-            System.out.println("Request amount must be any £100 increment between £1000 and £15000 inclusive");
-            return false;
+    private void validateRequestAmount(Integer requestAmount) {
+        if (requestAmount < MINI_REQUEST_AMOUNT
+                || requestAmount > MAX_REQUEST_AMOUNT
+                || requestAmount % INCREMENT != 0) {
+            throw new InvalidRequestAmountException("Request amount must be any £100 increment between £1000 and £15000 inclusive");
         }
-        return true;
     }
     
-    private Loan buildLoan(BigDecimal requestAmount, List<Offer> offers) {
-        BigDecimal totalRepayment = calculateTotalRepayment(offers);
-        BigDecimal rate = calculateRate(offers);
+    private Loan createLoan(Integer requestAmount, List<Offer> offers) {
         
-        Loan result = new Loan();
-        result.setRequestAmount(requestAmount);
-        result.setTotalRepayment(totalRepayment);
-        result.setMonthlyRepayment(calculateMonthlyPayment(totalRepayment));
-        result.setRate(rate);
-        return result;
+        Double apr = getApr(requestAmount, offers);
+        Double effectiveMonthlyInterestRate = getEffectiveMonthlyInterestRate(apr);
+        Double monthlyRepayment = getMonthlyRepayment(requestAmount, effectiveMonthlyInterestRate);
+        Double totalRepayment = monthlyRepayment * LOAN_TERM;
+        
+        return new Loan(requestAmount, format(totalRepayment, SCALE_TWO), format(monthlyRepayment, SCALE_TWO), format(apr, SCALE_THREE));
+        
     }
     
-    private BigDecimal calculateTotalRepayment(List<Offer> offers) {
-        return offers.stream()
-                     .map(offer -> offer.getRate()
-                                        .divide(valueOf(MONTHS_A_YEAR),2, HALF_UP)
-                                        .add(ONE)
-                                        .pow(TERM)
-                                        .multiply(offer.getAvailable()).setScale(2, HALF_UP))
-                     .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
+    private Double getApr(Integer loanAmount, List<Offer> offers) {
+        Double annualInterest = offers.stream()
+                                      .map(offer -> offer.getAvailable() * offer.getRate())
+                                      .reduce(0.0, (a, b) -> a + b);
+        return annualInterest / loanAmount;
     }
     
-    private BigDecimal calculateMonthlyPayment(BigDecimal totalRepayment) {
-        return totalRepayment.divide(valueOf(TERM), 2, HALF_UP);
+    private Double getEffectiveMonthlyInterestRate(Double apr) {
+        return Math.pow((1 + apr), (1.0 / MONTHS_A_YEAR)) - 1;
     }
     
-    private BigDecimal calculateRate(List<Offer> offers) {
-        return offers.stream()
-                     .map(offer -> offer.getRate())
-                     .reduce(BigDecimal.ZERO, (a, b) -> a.add(b)).divide(BigDecimal.valueOf(offers.size()), 3, HALF_UP);
+    private Double getMonthlyRepayment(Integer loanAmount, Double effectiveMonthlyInterestRate) {
+        return effectiveMonthlyInterestRate * loanAmount / (1 - (Math.pow(1 + effectiveMonthlyInterestRate, -LOAN_TERM)));
     }
     
 }

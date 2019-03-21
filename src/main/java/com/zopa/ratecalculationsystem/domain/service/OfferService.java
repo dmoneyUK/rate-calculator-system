@@ -10,7 +10,7 @@ public interface OfferService {
     
     void loadOffers(String fileName) throws IOException;
     
-    List<Offer> getLowInterestOffers(BigDecimal requestAmount);
+    List<Offer> getLowInterestOffers(Integer requestAmount);
     
     
 }

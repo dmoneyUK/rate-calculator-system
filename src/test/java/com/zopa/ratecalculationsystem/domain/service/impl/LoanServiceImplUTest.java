@@ -1,5 +1,6 @@
 package com.zopa.ratecalculationsystem.domain.service.impl;
 
+import com.zopa.ratecalculationsystem.domain.exception.InvalidRequestAmountException;
 import com.zopa.ratecalculationsystem.domain.model.Loan;
 import com.zopa.ratecalculationsystem.domain.service.LoanServiceImpl;
 import com.zopa.ratecalculationsystem.domain.service.OfferService;
@@ -9,14 +10,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.math.BigDecimal;
-import java.util.Optional;
-
-import static com.zopa.ratecalculationsystem.TestOfferEnum.Dan;
-import static java.math.BigDecimal.valueOf;
+import static com.zopa.ratecalculationsystem.TestOfferEnum.Fred;
+import static com.zopa.ratecalculationsystem.TestOfferEnum.Jane;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.newArrayList;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,57 +35,50 @@ public class LoanServiceImplUTest {
     public void shouldReturnLoanWithLowInterestOffers() {
         
         //given
-        BigDecimal expectedAmount = valueOf(1000);
-        when(offerServiceMock.getLowInterestOffers(expectedAmount))
-                .thenReturn(newArrayList(Dan.offer()));
+        int requestAmount = 1000;
+        when(offerServiceMock.getLowInterestOffers(requestAmount))
+                .thenReturn(newArrayList(Jane.offer(), Fred.offer()));
         
         //when
-        Loan actual = testObj.getLoan(expectedAmount).get();
+        Loan actual = testObj.getLoan(requestAmount);
         
         //then
-        verify(offerServiceMock).getLowInterestOffers(expectedAmount);
-        assertThat(actual.getRequestAmount()).isEqualTo(expectedAmount);
-        assertThat(actual.getTotalRepayment()).isEqualTo(valueOf(143.08));
-        assertThat(actual.getMonthlyRepayment()).isEqualTo(valueOf(3.97));
-        assertThat(actual.getRate()).isEqualTo(valueOf(0.120).setScale(3));
+        verify(offerServiceMock).getLowInterestOffers(requestAmount);
+        assertThat(actual.getRequestAmount()).isEqualTo(requestAmount);
+        assertThat(actual.getTotalRepayment()).isEqualTo(1108.10);
+        assertThat(actual.getMonthlyRepayment()).isEqualTo(30.78);
+        assertThat(actual.getRate()).isEqualTo(0.07);
         
         
     }
     
-    @Test
+    @Test(expected = InvalidRequestAmountException.class)
     public void shouldReturnAbsentWhenRequestAmountLessThan1000() {
         
         //when
-        Optional<Loan> actual = testObj.getLoan(BigDecimal.TEN);
+        Loan actual = testObj.getLoan(10);
         
         //then
-        verify(offerServiceMock, never()).getLowInterestOffers(any(BigDecimal.class));
-        assertThat(actual.isPresent()).isFalse();
+        verify(offerServiceMock, never()).getLowInterestOffers(anyInt());
         
     }
     
-    @Test
+    @Test(expected = InvalidRequestAmountException.class)
     public void shouldReturnAbsentWhenRequestAmountOver15000() {
         
         //when
-        Optional<Loan> actual = testObj.getLoan(BigDecimal.valueOf(16000));
+        Loan actual = testObj.getLoan(16000);
         
         //then
-        verify(offerServiceMock, never()).getLowInterestOffers(any(BigDecimal.class));
-        assertThat(actual.isPresent()).isFalse();
+        verify(offerServiceMock, never()).getLowInterestOffers(anyInt());
         
     }
     
-    @Test
+    @Test(expected = InvalidRequestAmountException.class)
     public void shouldReturnAbsentWhenRequestAmountIsNotTimesOf100() {
     
         //when
-        Optional<Loan> actual = testObj.getLoan(BigDecimal.valueOf(1234));
+        testObj.getLoan(1001);
     
-        //then
-        verify(offerServiceMock, never()).getLowInterestOffers(any(BigDecimal.class));
-        assertThat(actual.isPresent()).isFalse();
-        
     }
-    
 }

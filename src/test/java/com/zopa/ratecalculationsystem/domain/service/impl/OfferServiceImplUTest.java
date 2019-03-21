@@ -1,6 +1,7 @@
 package com.zopa.ratecalculationsystem.domain.service.impl;
 
 import com.zopa.ratecalculationsystem.TestOfferEnum;
+import com.zopa.ratecalculationsystem.domain.exception.NoSufficientOfferException;
 import com.zopa.ratecalculationsystem.domain.model.Offer;
 import com.zopa.ratecalculationsystem.domain.service.OfferServiceImpl;
 import com.zopa.ratecalculationsystem.infrastructure.CsvLoader;
@@ -76,7 +77,7 @@ public class OfferServiceImplUTest {
         
         //when
         List<Offer> actual = testObj.getLowInterestOffers(Jane.offer().getAvailable()
-                                                              .add(Angela.offer().getAvailable()));
+                                                                  + Angela.offer().getAvailable());
         
         //then
         assertThat(actual).isNotNull();
@@ -93,22 +94,24 @@ public class OfferServiceImplUTest {
         
         //when
         List<Offer> actual = testObj.getLowInterestOffers(Jane.offer().getAvailable()
-                                                              .add(Angela.offer().getAvailable())
-                                                              .add(BigDecimal.TEN));
+                                                                  + Angela.offer().getAvailable()
+                                                                  + 10);
         
         //then
         assertThat(actual).isNotNull();
         assertThat(actual.size()).isEqualTo(3);
+        
         assertThat(actual.get(0)).isEqualTo(Jane.offer());
         assertThat(actual.get(1)).isEqualTo(Angela.offer());
+        
         Offer partialOffer = actual.get(2);
         assertThat(partialOffer.getLender()).isEqualTo(Fred.offer().getLender());
         assertThat(partialOffer.getRate()).isEqualTo(Fred.offer().getRate());
-        assertThat(partialOffer.getAvailable()).isEqualTo(BigDecimal.TEN);
+        assertThat(partialOffer.getAvailable()).isEqualTo(10);
         
     }
     
-    @Test
+    @Test(expected = NoSufficientOfferException.class)
     public void shouldReturnEmptyListWhenCannotFindSufficientOffers() {
         
         //when

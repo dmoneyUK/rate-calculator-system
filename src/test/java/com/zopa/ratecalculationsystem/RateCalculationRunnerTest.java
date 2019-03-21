@@ -1,5 +1,6 @@
 package com.zopa.ratecalculationsystem;
 
+import com.zopa.ratecalculationsystem.domain.model.Loan;
 import com.zopa.ratecalculationsystem.domain.service.LoanService;
 import com.zopa.ratecalculationsystem.domain.service.OfferService;
 import org.junit.Before;
@@ -9,9 +10,13 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RateCalculationRunnerTest {
@@ -32,8 +37,11 @@ public class RateCalculationRunnerTest {
     @Test
     public void shouldLoadOffers() throws Exception {
     
+        //given
+        when(loanServiceMock.getLoan(anyInt())).thenReturn(mock(Loan.class));
+    
         testObj.run("TestFile", "1000");
         verify(offerServiceMock).loadOffers("TestFile");
-        verify(loanServiceMock).getLoan(BigDecimal.valueOf(1000));
+        verify(loanServiceMock).getLoan(1000);
     }
 }

@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 public class Offer {
     
     private String lender;
-    private BigDecimal rate;
-    private BigDecimal available;
+    private Double rate;
+    private Integer available;
     
 }
