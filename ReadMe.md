@@ -7,15 +7,19 @@ This is a springboot command-line application to calculate loan interest.
 * maven 3.3.9
 
 # Assumptions
-* A loan/quote can be built from multiple offers
+* A loan/quote can be built from multiple offers;
 * An offer can be bundled to a loan partially (i.e. an offer providing £100 can be selected but only borrow £10 from it.)
 * If multiple offers provided with the same rate, the small amount will be selected first. Avoid to split a lender's offer
 which may cause difficulty for future work;
-* Multithread concurrency is not considered;
+
+# Limitation and improvment
+Some works have been considered but did not get time to complete:
+* Multithread concurrency is not support;
 * Run the app will generate one loan only and does not support to generate another loan(The offers selected are not
 removed from available. Can be improved.)
-* Some improvement can be done (checking, testing) if time allows, put some comments there
-
+* CommandLine input arguments number and format are not validated. Can be improved. 
+* CSV loader is copied from internet and not fully covered by tests. 
+* Some improvement can be done (validating, testing) if time allows, put some comments there
 
 # Execution
 * mvn install from the project's root folder to build the jar file (target/rate-calculation-system-0.0.1-SNAPSHOT.jar)
