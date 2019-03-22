@@ -5,14 +5,12 @@ import java.util.function.Function;
 
 public class DoubleFormatter {
     
-    public static Function<Double, Double> SCALE_TWO = original -> BigDecimal.valueOf(original)
-                                                                             .setScale(2, BigDecimal.ROUND_HALF_UP)
-                                                                             .doubleValue();
-    public static Function<Double, Double> SCALE_THREE = original -> BigDecimal.valueOf(original)
-                                                                               .setScale(3, BigDecimal.ROUND_HALF_UP)
-                                                                               .doubleValue();
+    public static Function<Double, BigDecimal> SCALE_ONE = original -> BigDecimal.valueOf(original)
+                                                                                 .setScale(1, BigDecimal.ROUND_HALF_UP);
+    public static Function<Double, BigDecimal> SCALE_TWO = original -> BigDecimal.valueOf(original)
+                                                                             .setScale(2, BigDecimal.ROUND_HALF_UP);
     
-    public static Double format(Double original, Function<Double, Double> formatFn) {
+    public static BigDecimal format(Double original, Function<Double, BigDecimal> formatFn) {
         return formatFn.apply(original);
     }
 }

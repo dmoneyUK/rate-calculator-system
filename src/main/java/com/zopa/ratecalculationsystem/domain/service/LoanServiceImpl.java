@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.zopa.ratecalculationsystem.infrastructure.DoubleFormatter.SCALE_THREE;
+import static com.zopa.ratecalculationsystem.infrastructure.DoubleFormatter.SCALE_ONE;
 import static com.zopa.ratecalculationsystem.infrastructure.DoubleFormatter.SCALE_TWO;
 import static com.zopa.ratecalculationsystem.infrastructure.DoubleFormatter.format;
 
@@ -53,8 +53,11 @@ public class LoanServiceImpl implements LoanService {
         Double effectiveMonthlyInterestRate = getEffectiveMonthlyInterestRate(apr);
         Double monthlyRepayment = getMonthlyRepayment(requestAmount, effectiveMonthlyInterestRate);
         Double totalRepayment = monthlyRepayment * LOAN_TERM;
-        
-        return new Loan(requestAmount, format(totalRepayment, SCALE_TWO), format(monthlyRepayment, SCALE_TWO), format(apr, SCALE_THREE));
+        return Loan.builder()
+                   .requestAmount(requestAmount)
+                   .totalRepayment(format(totalRepayment, SCALE_TWO))
+                   .monthlyRepayment(format(monthlyRepayment, SCALE_TWO))
+                   .rate(format(apr * 100, SCALE_ONE)).build();
         
     }
     

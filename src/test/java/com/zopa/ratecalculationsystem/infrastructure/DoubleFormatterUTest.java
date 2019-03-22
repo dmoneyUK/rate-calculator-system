@@ -2,25 +2,27 @@ package com.zopa.ratecalculationsystem.infrastructure;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DoubleFormatterUTest {
     
-    public static double TEST_VALUE = 0.1111;;
+    public static double TEST_VALUE = 0.1000;
     
     @Test
-    public void shouldFormatToScale3() {
+    public void shouldFormatToScale1() {
     
-        Double actual = DoubleFormatter.format(TEST_VALUE, DoubleFormatter.SCALE_THREE);
-        
-        assertThat(actual).isEqualTo(0.111);
+        BigDecimal actual = DoubleFormatter.format(TEST_VALUE, DoubleFormatter.SCALE_ONE);
+    
+        assertThat(actual.toString()).isEqualTo("0.1");
     }
     
     @Test
     public void shouldFormatToScale2() {
-        
-        Double actual = DoubleFormatter.format(TEST_VALUE, DoubleFormatter.SCALE_TWO);
-        
-        assertThat(actual).isEqualTo(0.11);
+    
+        BigDecimal actual = DoubleFormatter.format(TEST_VALUE, DoubleFormatter.SCALE_TWO);
+    
+        assertThat(actual.toString()).isEqualTo("0.10");
     }
 }

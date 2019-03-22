@@ -45,9 +45,9 @@ public class LoanServiceImplUTest {
         //then
         verify(offerServiceMock).getLowInterestOffers(requestAmount);
         assertThat(actual.getRequestAmount()).isEqualTo(requestAmount);
-        assertThat(actual.getTotalRepayment()).isEqualTo(1108.10);
-        assertThat(actual.getMonthlyRepayment()).isEqualTo(30.78);
-        assertThat(actual.getRate()).isEqualTo(0.07);
+        assertThat(actual.getTotalRepayment().toString()).isEqualTo("1108.10");
+        assertThat(actual.getMonthlyRepayment().toString()).isEqualTo("30.78");
+        assertThat(actual.getRate().toString()).isEqualTo("7.0");
         
         
     }

@@ -46,7 +46,10 @@ public class OfferServiceImpl implements OfferService {
                 selected.add(offer);
                 remaining -= offer.getAvailable();
             } else {
-                selected.add(new Offer(offer.getLender(), offer.getRate(), remaining));
+                selected.add(Offer.builder()
+                                  .lender(offer.getLender())
+                                  .rate(offer.getRate())
+                                  .available(remaining).build());
                 remaining=0;
             }
         }

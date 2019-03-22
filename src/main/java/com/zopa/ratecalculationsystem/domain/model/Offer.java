@@ -1,14 +1,14 @@
 package com.zopa.ratecalculationsystem.domain.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.math.BigDecimal;
-
-@Data
+@Builder
+@Getter
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
@@ -18,5 +18,6 @@ public class Offer {
     private String lender;
     private Double rate;
     private Integer available;
+    
     
 }
