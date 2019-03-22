@@ -33,10 +33,8 @@ public class RateCalculationRunner implements CommandLineRunner {
             System.out.println("Monthly repayment: £"+loan.getMonthlyRepayment());
             System.out.println("Total repayment: £"+loan.getTotalRepayment());
         }catch (Exception e){
-            log.error("Exception caught: {}",e);
+            System.out.println(e.getMessage());
             System.exit(1);
         }
-       
-        
     }
 }
