@@ -1,9 +1,10 @@
+# Introduction
+This is a springboot command-line application to calculate loan interest.
+
+
 # Build Environment
 * jdk 1.8.0_152-b16
 * maven 3.3.9
-
-# Introduction
-This is a springboot command application.
 
 # Assumptions
 * A loan/quote can be built from multiple offers
@@ -20,4 +21,4 @@ removed from available. Can be improved.)
 * mvn install from the project's root folder to build the jar file (target/rate-calculation-system-0.0.1-SNAPSHOT.jar)
 * run the java -jar <jar_file> <absolute_path_to_csv_file> <request_amount>
 example:
-java -jar target/rate-calculation-system-0.0.1-SNAPSHOT.jar /Users/jinge.dai/GitHub/rate-calculation-system/src/test/resources/test_market_data.csv 1000
+java -jar target/rate-calculation-system-0.0.1-SNAPSHOT.jar target/test-classes/test_market_data.csv 1000
